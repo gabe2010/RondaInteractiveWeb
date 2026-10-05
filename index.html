@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio Name</title>
+<meta name="description" content="A new studio making Games, interactive experiences and animation.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:wght@400;700&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Project titles: --title-size is smallest, scales-with-screen-width, largest. --title-overlap is how much of the title sits up over the video (0 = none, .5 = half, 1 = all) */
+:root{--title-size:clamp(2.5rem,6vw,5rem);--title-overlap:.5;
+--hero-tagline-size:clamp(1.4rem,3.5vw,3rem); /* the line under the studio name on the first screen */
+--ink:#10201f;--paper:#eef0ea;--accent:#c9b8ff;--head:'Averia Serif Libre',Georgia,'Times New Roman',serif;--body:'Instrument Sans',Helvetica,Arial,sans-serif}
+*{box-sizing:border-box;margin:0}
+[hidden]{display:none!important}
+html{scroll-snap-type:y proximity;scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font:400 1.05rem/1.6 var(--body)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+header{position:fixed;inset:0 0 auto 0;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:1.25rem clamp(1rem,4vw,3rem);mix-blend-mode:difference;color:#fff}
+header a{text-decoration:none;font:700 1.1rem var(--head)}
+header img{display:block;height:clamp(5rem,5vw,8rem);width:auto}
+header nav{display:flex;gap:1.5rem}
+header nav a{font:500 1rem var(--body)}
+
+.screen{position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;padding:clamp(1.25rem,4vw,3rem);scroll-snap-align:start;overflow:hidden;background:var(--bg,var(--ink))}
+.stage{position:absolute;inset:0;z-index:0;container-type:size}
+.slot{position:absolute;inset:0;opacity:0}
+.slot.on{opacity:1}
+.slot video,.slot img,.slot .yt{position:absolute;left:50%;top:0;translate:-50% 0;height:100%;width:calc(100cqh*var(--r,1.7778));max-width:none}
+.slot.full video,.slot.full img,.slot.full .yt{top:50%;translate:-50% -50%;width:max(100cqw,100cqh*var(--r,1.7778));height:max(100cqh,100cqw/var(--r,1.7778))}
+.slot .yt{pointer-events:none}
+.slot .yt iframe{width:100%;height:100%;border:0}
+.credit{position:absolute;right:clamp(1.25rem,4vw,3rem);bottom:clamp(1.25rem,4vw,3rem);z-index:1;max-width:40%;text-align:right;font-size:.8rem;line-height:1.3;opacity:.75;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.screen .text{position:relative;z-index:1;max-width:60rem;text-shadow:0 1px 14px rgba(0,0,0,.1)}
+h1,h2{font-family:var(--head);font-weight:700;line-height:.95;letter-spacing:-.03em}
+h1{font-size:clamp(3.5rem,13vw,11rem)}
+h2{font-size:clamp(2.5rem,7vw,6rem)}
+.meta{margin-top:1rem;opacity:.85}
+#top .meta{font-size:var(--hero-tagline-size);line-height:1.15;opacity:1}
+.project{flex-direction:column;align-items:stretch;padding:0}
+.media{position:relative;flex:1 1 0;min-height:45vh;min-height:45svh;overflow:hidden}
+.bar{position:relative;z-index:1;padding:0 clamp(1rem,4vw,3rem) 1rem;background:var(--bg,var(--ink));color:var(--paper)}
+.bar .text{max-width:none;text-shadow:none;margin-top:calc(var(--title-size)*var(--title-overlap)*-1)}
+.bar h2{font-size:var(--title-size);line-height:1;text-shadow:0 0 .15em var(--bg,var(--ink)),0 0 .4em var(--bg,var(--ink))}
+.bar .credit{position:static;float:right;max-width:40%;margin:calc(var(--title-size)*var(--title-overlap) + .4rem) 0 .3rem 1rem;shape-outside:inset(calc(var(--title-size)*var(--title-overlap)) 0 0 0);font-size:clamp(.6rem,1.8vw,.8rem);text-shadow:none}
+.credit:empty{display:none}
+.bar .meta{margin-top:.4rem}
+.tagline{margin-top:.15rem;max-width:44rem;font-size:1.15rem;font-weight:500}
+.info{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .3s ease,opacity .3s ease}
+.info>div{overflow:hidden;min-height:0;max-width:44rem;font-size:.95rem;line-height:1.5}
+.info p{margin-top:.6rem}
+.open .info{grid-template-rows:1fr;opacity:1}
+.screen .text [tabindex]{cursor:default}
+#work .notice{padding:6rem clamp(1rem,4vw,3rem) 2rem}
+
+#about,#contact{background:var(--paper);color:var(--ink);align-items:center}
+#about .grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,6rem);max-width:80rem;margin:auto;width:100%}
+#about p{max-width:38rem;font-size:1.2rem}
+#about p+p{margin-top:1rem}
+.team{list-style:none;padding:0;margin-top:2rem}
+.team li{padding:.75rem 0;border-top:1px solid rgba(16,32,31,.25);display:flex;justify-content:space-between;gap:1rem}
+#contact{background:var(--accent);min-height:60vh}
+#contact a{font:700 clamp(1.75rem,6vw,5rem)/1 var(--head);letter-spacing:-.03em;word-break:break-all}
+footer{padding:1.5rem clamp(1rem,4vw,3rem);background:var(--accent);color:var(--ink);font-size:.9rem}
+
+@media(max-width:760px){#about .grid{grid-template-columns:1fr}header nav{gap:1rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.info{transition:none}}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="#top" id="logo"></a>
+  <nav><a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a></nav>
+</header>
+
+<main id="main">
+  <section class="screen" id="top"></section>
+  <div id="work"></div>
+
+  <section class="screen" id="about">
+    <div class="grid">
+      <h2>About</h2>
+      <div>
+        <div id="about-text"></div>
+        <ul class="team" id="team"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="screen" id="contact"><a id="email"></a></section>
+</main>
+<footer id="footer"></footer>
+
+<script>
+/* ============================================================
+   EDIT THIS BLOCK TO UPDATE THE SITE. Nothing below needs touching.
+   - Videos: put files in a /videos folder, short loops (5-15s, MP4/H.264,
+     1080p, under ~8 MB each) work best. Compress at handbrake.fr.
+   - Each project has a folder and a list of clips (videos and/or images). They play
+     in the order listed and loop. Add one by dropping the file in the folder and
+     adding its name. For a credit (bottom right) or a custom time on a still, use:
+        { file: "still.jpg", credit: "Photo: Name", seconds: 6, full: true, zoom: 1 }
+     full: true fills the whole screen (edges get cropped) instead of showing the
+     whole frame. Put full: true on a project to apply it to all its clips.
+     zoom: 1 turns off the slow zoom for one still.
+   - YouTube: use { youtube: "VIDEO_ID" } in the clips list (a full link works too).
+     It plays muted with no controls, like the other clips. Add ratio: 9/16 for
+     vertical videos. The site must be online (not opened as a local file).
+   - Each project has a bar under its clips with the title, then client and year,
+     then an optional tagline: "..." line.
+     text: "..." on a project adds a block that unfolds in that bar when it is hovered
+     (or tapped on touch screens). Use a list ["Paragraph one", "Paragraph two"]
+     for several paragraphs. Leave it out for no hover text.
+   - PROJECTS LIVE IN A SPREADSHEET: projects.csv (same folder as this file), or a
+     Google Sheets link (File > Share > Publish to web > choose the sheet and CSV).
+     One row per clip. Fill title, client, tagline, year, color, folder and text on a
+     project's first row only; the rows below it belong to that project until a new
+     title appears. Columns: clip (file name or YouTube link), credit, full (yes),
+     seconds, zoom, ratio. Put a line break in the text cell for a new paragraph.
+   - Prefer editing here? Set projects: [ { title: "...", clips: [...] }, ... ]
+     instead of a file name and use the clip options described above.
+   ============================================================ */
+const SITE = {
+  name: "Ronda Interactive",
+  logo: "",   // path to your logo file; set to "" to show the studio name as text instead
+  tagline: "Stories, games, installations and XR",
+  overlap: 1,     // seconds the next clip plays on top before the current one ends
+  imageSeconds: 5, // how long each still image stays up (can be set per image)
+  stillZoom: 1.06, // stills slowly zoom out from this scale to 1 (set to 1 for no movement)
+  hero: { folder: "videos/hero/", clips: ["Hero.mp4"] },
+  email: "ronda.interactive@gmail.com",
+  about: [                           // wrap words in **two stars** to make them bold
+    "We're interested in learning through play.",
+
+    "The studio builds on our collective experience working in immersive theatre and digital media to explore opportunities for education and engagement through games, installation and XR.",
+
+    "**Gabriel Stones** is an artist and developer with over ten years' experience making digital installations and XR experiences with artists, museums and galleries.",
+
+    "**Maito Jobbe duval** is a designer and producer who brings her background in immersive theatre design to XR." 
+  ],
+  team: [
+    // { name: "First Name", role: "Director" },
+    // { name: "First Name", role: "Design" }
+  ],
+  //projects: "projects.csv"   // spreadsheet file or published Google Sheets CSV link
+  projects: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTDiJw9G8zcWbMU45TkwchbzubHQeN3dGi-UOSlGcCdMvk3O9VJ7Fl-FEt2d9nJatkiOLEluaFFOhL_/pub?gid=757010743&single=true&output=csv"
+};
+/* ============================================================ */
+
+const $ = id => document.getElementById(id);
+const el = (tag, attrs = {}, html = "") => Object.assign(document.createElement(tag), attrs, { innerHTML: html });
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const IMG = /\.(jpe?g|png|webp|gif|avif|svg)$/i;
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let ytApi;                           // YouTube's player script, loaded only if a project uses it
+const loadYT = () => ytApi || (ytApi = new Promise(res => {
+  window.onYouTubeIframeAPIReady = () => res(window.YT);
+  document.head.append(el("script", { src: "https://www.youtube.com/iframe_api" }));
+}));
+const ytId = v => { const m = String(v).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/); return m ? m[1] : v; };
+
+/* Plays a list of videos/images in a loop; each item starts on top of the previous one shortly before it ends */
+function player(stage, items, credit) {
+  const OVERLAP = SITE.overlap * 1000, many = items.length > 1;
+  const slots = [0, 1].map(() => {
+    const d = el("div", { className: "slot" });
+    d.vid = el("video", { muted: true, playsInline: true, preload: "metadata" });
+    d.img = el("img", { alt: "", decoding: "async" });
+    d.yt = el("div", { className: "yt" }, "<div></div>");
+    d.append(d.vid, d.img, d.yt);
+    d.setAttribute("aria-hidden", "true");
+    stage.append(d);
+    return d;
+  });
+  let i = 0, cur = 0, z = 1, raf = 0, last = 0, swapping = false, fails = 0;
+
+  function load(slot, item) {
+    if (slot.anim) { slot.anim.cancel(); slot.anim = null; }
+    slot.item = item; slot.t = 0; slot.bad = false;
+    slot.classList.toggle("full", !!item.full);
+    slot.want = false;
+    slot.style.setProperty("--r", item.ratio || 16 / 9);
+    slot.vid.hidden = item.image || !!item.yt; slot.img.hidden = !item.image; slot.yt.hidden = !item.yt;
+    if (!item.image) slot.img.removeAttribute("src");
+    if (item.image || item.yt) { slot.vid.removeAttribute("src"); slot.vid.load(); }
+    if (!item.yt && slot.ytOk) slot.ytp.pauseVideo();
+    if (item.yt) ytLoad(slot, item);
+    else (item.image ? slot.img : slot.vid).src = item.src;
+    slot.vid.loop = items.length === 1;
+  }
+  const left = s => s.item.image ? (s.item.seconds || SITE.imageSeconds) * 1000 - s.t
+    : s.item.yt ? (s.want && s.ytOk && s.ytp.getDuration() > 0 ? (s.ytp.getDuration() - s.ytp.getCurrentTime()) * 1000 : Infinity)
+    : isFinite(s.vid.duration) ? (s.vid.duration - s.vid.currentTime) * 1000 : Infinity;
+  function ytLoad(slot, item) {
+    slot.ytOk = false;
+    loadYT().then(YT => {
+      if (slot.item !== item) return;              // slot has moved on to something else
+      if (slot.ytp) { if (slot.ytp.cueVideoById) { slot.ytp.cueVideoById(item.yt); slot.ytOk = true; } return; }
+      slot.ytp = new YT.Player(slot.yt.firstElementChild, {
+        videoId: item.yt, width: "100%", height: "100%",
+        playerVars: { controls: 0, mute: 1, playsinline: 1, rel: 0, modestbranding: 1, disablekb: 1, fs: 0, iv_load_policy: 3,
+          ...(location.protocol.startsWith("http") ? { origin: location.origin } : {}) },
+        events: {
+          onReady: () => {
+            slot.ytp.mute();
+            if (slot.item.yt && slot.item.yt !== item.yt) slot.ytp.cueVideoById(slot.item.yt);
+            slot.ytOk = true;
+            if (slot.want) slot.ytp.playVideo();
+          },
+          onStateChange: e => {
+            if (e.data === 1) fails = 0;
+            if (e.data !== 0) return;              // 0 = ended
+            if (many && slot === slots[cur] && !swapping) next();
+            else if (!many) { slot.ytp.seekTo(0); slot.ytp.playVideo(); }
+          },
+          onError: () => fail(slot)
+        }
+      });
+    });
+  }
+  function fail(s) {                 // missing or blocked file: hide it (background colour shows) and skip on
+    s.bad = true; s.classList.remove("on");
+    if (++fails <= items.length + 1 && many && s === slots[cur] && !swapping) next();
+  }
+  function zoomOut(s) {              // slow zoom out on stills, lasting as long as the still is on screen
+    const k = s.item.zoom ?? SITE.stillZoom;
+    if (REDUCE || !k || k === 1) return;
+    if (!s.anim) s.anim = s.img.animate([{ transform: `scale(${k})` }, { transform: "scale(1)" }],
+      { duration: (s.item.seconds || SITE.imageSeconds) * 1000, easing: "ease-out", fill: "both" });
+    else if (s.anim.playState === "paused") s.anim.play();
+  }
+  const start = s => {
+    s.classList.add("on"); s.want = true;
+    if (s.item.image) zoomOut(s);
+    else if (s.item.yt) { if (s.ytOk) s.ytp.playVideo(); }
+    else s.vid.play().catch(() => {});
+  };
+
+  load(slots[0], items[0]);
+  if (many) load(slots[1], items[1]);
+  credit.textContent = items[0].credit;
+
+  function next() {
+    swapping = true;
+    const old = slots[cur], wait = left(old);
+    cur = 1 - cur;
+    i = (i + 1) % items.length;
+    const b = slots[cur];
+    b.t = 0;
+    if (!b.item.image && !b.item.yt) b.vid.currentTime = 0;
+    b.style.zIndex = ++z;            // the new item sits on top of the old one
+    start(b);
+    credit.textContent = b.item.credit;
+    setTimeout(() => {               // when the old item finishes it disappears; preload the one after next
+      old.classList.remove("on");
+      old.vid.pause();
+      load(old, items[(i + 1) % items.length]);
+      swapping = false;
+    }, (isFinite(wait) ? Math.max(wait, 0) : OVERLAP) + 60);
+  }
+  function tick(now) {
+    const a = slots[cur];
+    if (a.item.image) a.t += now - last;
+    last = now;
+    if (!swapping && left(a) <= OVERLAP) next();
+    raf = requestAnimationFrame(tick);
+  }
+  slots.forEach(s => {
+    const shape = (w, h, node) => { if (w && h && !node.hidden) s.style.setProperty("--r", w / h); };
+    s.vid.addEventListener("loadedmetadata", () => shape(s.vid.videoWidth, s.vid.videoHeight, s.vid));
+    s.img.addEventListener("load", () => shape(s.img.naturalWidth, s.img.naturalHeight, s.img));
+    s.vid.addEventListener("playing", () => { fails = 0; });
+    s.img.addEventListener("load", () => { fails = 0; });
+    s.vid.addEventListener("ended", () => { if (many && s === slots[cur] && !swapping) next(); });
+    const bad = e => { if (!e.target.hidden) fail(s); };
+    s.vid.addEventListener("error", bad);
+    s.img.addEventListener("error", bad);
+  });
+  return {
+    play() {
+      slots.forEach(s => s.vid.preload = "auto");
+      if (!slots[cur].bad) start(slots[cur]);
+      cancelAnimationFrame(raf);
+      last = performance.now();
+      if (many) raf = requestAnimationFrame(tick);
+    },
+    pause() {
+      cancelAnimationFrame(raf);
+      slots.forEach(s => {
+        s.vid.pause(); s.want = false;
+        if (s.anim && s.anim.playState === "running") s.anim.pause();
+        if (s.ytOk) s.ytp.pauseVideo();
+      });
+    }
+  };
+}
+
+const ctx = document.createElement("canvas").getContext("2d");
+const isLight = c => {               // is this colour light enough to need dark text on it?
+  ctx.fillStyle = "#000"; ctx.fillStyle = c;
+  const n = parseInt(ctx.fillStyle.slice(1), 16);
+  return .299 * (n >> 16) + .587 * (n >> 8 & 255) + .114 * (n & 255) > 150;
+};
+let infoN = 0;
+function screen(title, meta, media, color, big) {
+  const s = el("section", { className: big ? "screen" : "screen project" });
+  s.style.setProperty("--bg", color || "#10201f");
+  const top = big ? s : el("div", { className: "media" });   // projects: clips on top, a bar for the words underneath
+  const bar = big ? s : el("div", { className: "bar" });
+  if (!big) { s.append(top, bar); if (isLight(color || "#10201f")) bar.style.color = "var(--ink)"; }
+  if (media && media.clips && media.clips.length) {
+    const stage = el("div", { className: "stage" });
+    const credit = el("div", { className: "credit" });
+    top.append(stage);
+    bar.append(credit);              // hero: over the clip. Projects: moved into the bar below, just under the clip
+    s._player = player(stage, media.clips.map(c => {
+      const o = typeof c === "string" ? { file: c } : c;
+      const yt = o.youtube ? ytId(o.youtube) : "";
+      return { src: yt ? "" : (media.folder || "") + o.file, credit: o.credit || "", seconds: o.seconds, yt, ratio: o.ratio,
+               image: !yt && IMG.test(o.file), full: o.full ?? media.full, zoom: o.zoom };
+    }), credit);
+  }
+  const tag = big ? "h1" : "h2";
+  const t = el("div", { className: "text" }, `<${tag}>${esc(title)}</${tag}><p class="meta">${esc(meta)}</p>`
+    + (!big && media && media.tagline ? `<p class="tagline">${esc(media.tagline)}</p>` : ""));
+  bar.append(t);
+  if (!big && bar.firstElementChild !== t) t.prepend(bar.firstElementChild);   // credit floats top right; the title wraps around it
+  const paras = big ? [] : [].concat((media && media.text) || []);
+  if (paras.length) {                // optional text, folded away in the bar until it is hovered (or tapped)
+    const info = el("div", { className: "info", id: "info" + (++infoN) }, "<div>" + paras.map(x => `<p>${esc(x)}</p>`).join("") + "</div>");
+    bar.append(info);
+    const h = t.querySelector(tag), set = on => s.classList.toggle("open", on);
+    h.tabIndex = 0; h.setAttribute("aria-describedby", info.id);
+    bar.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") set(true); });
+    bar.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") set(false); });
+    h.addEventListener("focus", () => { if (h.matches(":focus-visible")) set(true); });
+    h.addEventListener("blur", () => { if (!bar.matches(":hover")) set(false); });
+    bar.addEventListener("click", () => {          // touch screens: the clips keep their size and the text opens below, making the screen taller
+      if (!matchMedia("(hover: none)").matches) return;
+      if (!s.classList.contains("open")) top.style.flex = `0 0 ${top.offsetHeight}px`;
+      if (s.classList.toggle("open")) setTimeout(() => s.scrollIntoView({ block: "end", behavior: REDUCE ? "auto" : "smooth" }), 320);
+    });
+    addEventListener("resize", () => { if (!s.classList.contains("open")) top.style.flex = ""; });
+  }
+  return s;
+}
+
+document.title = SITE.name;
+$("logo").textContent = SITE.name;
+if (SITE.logo) {
+  const img = el("img", { src: SITE.logo, alt: SITE.name });
+  img.addEventListener("error", () => img.replaceWith(SITE.name)); // falls back to text if the file is missing
+  $("logo").textContent = "";
+  $("logo").append(img);
+}
+$("footer").textContent = "© " + new Date().getFullYear() + " " + SITE.name;
+$("email").textContent = SITE.email;
+$("email").href = "mailto:" + SITE.email;
+$("about-text").innerHTML = SITE.about.map(p => `<p>${esc(p).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")}</p>`).join("");
+$("team").innerHTML = SITE.team.map(t => `<li><span>${esc(t.name)}</span><span>${esc(t.role)}</span></li>`).join("");
+
+const hero = screen(SITE.name, SITE.tagline, SITE.hero, "#10201f", true);
+$("top").replaceWith(Object.assign(hero, { id: "top" }));
+/* Reads the projects spreadsheet (CSV): one row per clip, project details on its first row */
+function parseCSV(text) {
+  const rows = []; let row = [], cell = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+    else if (c === '"') q = true;
+    else if (c === ",") { row.push(cell); cell = ""; }
+    else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+    else cell += c;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+function parseProjects(text) {
+  const [head, ...rows] = parseCSV(text.replace(/^\ufeff/, ""));
+  const keys = head.map(h => h.trim().toLowerCase()), yes = v => /^(y|yes|true|x|1)$/i.test(v);
+  const out = []; let cur = null;
+  for (const r of rows) {
+    const o = {}; keys.forEach((k, i) => o[k] = (r[i] || "").trim());
+    if (!Object.values(o).some(Boolean)) continue;
+    if (o.title) {
+      cur = { title: o.title, client: o.client, year: o.year, tagline: o.tagline, color: o.color || undefined,
+              folder: o.folder && !o.folder.endsWith("/") ? o.folder + "/" : o.folder,
+              text: o.text ? o.text.split(/\n+/) : [], clips: [] };
+      out.push(cur);
+    }
+    if (!cur || !o.clip) continue;
+    const item = /youtu/i.test(o.clip) ? { youtube: o.clip } : { file: o.clip };
+    if (o.credit) item.credit = o.credit;
+    if (yes(o.full)) item.full = true;
+    if (o.seconds) item.seconds = +o.seconds;
+    if (o.zoom) item.zoom = +o.zoom;
+    if (o.ratio) { const [a, b] = o.ratio.split("/"); item.ratio = b ? a / b : +a; }
+    cur.clips.push(item);
+  }
+  return out;
+}
+
+
+/* Play a project's clips only while it is on screen (saves battery and bandwidth) */
+const io = new IntersectionObserver(entries => entries.forEach(e => {
+  const p = e.target._player;
+  if (p) e.isIntersecting ? p.play() : p.pause();
+}), { threshold: .4 });
+[$("top"), $("about"), $("contact")].forEach(s => io.observe(s));
+function show(list) {
+  const work = $("work");
+  work.querySelectorAll(".screen").forEach(s => { io.unobserve(s); if (s._player) s._player.pause(); });
+  work.replaceChildren(...list.map(p => screen(p.title, [p.client, p.year].filter(Boolean).join(", "), p, p.color)));
+  work.querySelectorAll(".screen").forEach(s => io.observe(s));
+}
+/* The spreadsheet takes a moment to arrive, and projects popping in above About would make the page jump.
+   So: the last spreadsheet seen is kept in the browser and shown straight away, then swapped only if it has changed.
+   On a first visit there is nothing kept yet, so About and Contact stay hidden until the projects are in. */
+(async () => {
+  const src = SITE.projects;
+  if (typeof src !== "string") return show(src);
+  const KEY = "projects:" + src, rest = [$("about"), $("contact"), $("footer")];
+  let saved = "";
+  try { saved = localStorage.getItem(KEY) || ""; } catch (e) {}
+  if (saved) show(parseProjects(saved));
+  else rest.forEach(n => n.hidden = true);
+  try {
+    const res = await fetch(src);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const text = await res.text();
+    if (text !== saved) {
+      show(parseProjects(text));
+      try { localStorage.setItem(KEY, text); } catch (e) {}
+    }
+  } catch (err) {
+    if (!saved) $("work").append(el("p", { className: "notice" }, "Could not load the projects spreadsheet (" + esc(err.message) + "). Open the site through a web server, not straight from the file."));
+  }
+  if (!saved) {
+    rest.forEach(n => n.hidden = false);
+    const target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+    if (target) target.scrollIntoView();        // a link straight to #about or #contact still lands there
+  }
+})();
+</script>
+</body>
+</html>
