@@ -13,7 +13,7 @@
 /* Project titles: --title-size is smallest, scales-with-screen-width, largest. --title-overlap is how much of the title sits up over the video (0 = none, .5 = half, 1 = all) */
 :root{--title-size:clamp(2.5rem,6vw,5rem);--title-overlap:.5;
 --hero-tagline-size:clamp(1.4rem,3.5vw,3rem); /* the line under the studio name on the first screen */
---ink:#10201f;--paper:#eef0ea;--accent:#c9b8ff;--head:'Averia Serif Libre',Georgia,'Times New Roman',serif;--body:'Instrument Sans',Helvetica,Arial,sans-serif}
+--ink:#000000;--paper:#eef0ea;--accent:#c9b8ff;--head:'Averia Serif Libre',Georgia,'Times New Roman',serif;--body:'Instrument Sans',Helvetica,Arial,sans-serif}
 *{box-sizing:border-box;margin:0}
 [hidden]{display:none!important}
 html{scroll-snap-type:y proximity;scroll-behavior:smooth}
@@ -366,7 +366,7 @@ $("email").href = "mailto:" + SITE.email;
 $("about-text").innerHTML = SITE.about.map(p => `<p>${esc(p).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")}</p>`).join("");
 $("team").innerHTML = SITE.team.map(t => `<li><span>${esc(t.name)}</span><span>${esc(t.role)}</span></li>`).join("");
 
-const hero = screen(SITE.name, SITE.tagline, SITE.hero, "#10201f", true);
+const hero = screen(SITE.name, SITE.tagline, SITE.hero, "Black", true);
 $("top").replaceWith(Object.assign(hero, { id: "top" }));
 /* Reads the projects spreadsheet (CSV): one row per clip, project details on its first row */
 function parseCSV(text) {
